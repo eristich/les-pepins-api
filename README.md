@@ -4,9 +4,9 @@
 
 ### Outils nécessaire
 
-- PHP >= 8.2
-- Composer >= 2.7.1
-- Symfony CLI >= 5.11.0
+- [PHP >= 8.2](https://www.apachefriends.org/fr/index.html)
+- [Composer >= 2.7.1](https://getcomposer.org/download/)
+- [Symfony CLI >= 5.11.0](https://symfony.com/download)
 - Base de donnée Oracle (Local ou Docker)
 
 ### Commencer
