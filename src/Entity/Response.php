@@ -19,17 +19,18 @@ class Response
     #[ORM\Column(name: 'Reponse_Lib', length: 255, nullable: true)]
     private ?string $name = null;
 
+    // todo: replace column type "double" by "float"
     #[ORM\Column(name: 'Poids', nullable: true)]
     private ?float $weight = null;
 
-    #[ORM\ManyToOne(targetEntity: Question::class)]
+    #[ORM\ManyToOne(targetEntity: Question::class, inversedBy: 'responses')]
     #[ORM\JoinColumn(name: 'ID_Question', referencedColumnName: 'ID_Question', nullable: false)]
     private ?Question $question = null;
 
     /**
-     * @var Collection<int, UserResponse>
+     * @return Collection<int, UserResponse>
      */
-    #[ORM\OneToMany(targetEntity: UserResponse::class, mappedBy: 'ID_Question')]
+    #[ORM\OneToMany(targetEntity: UserResponse::class, mappedBy: 'reponse', cascade: ['persist', 'remove'])]
     private Collection $userResponses;
 
     public function __construct()

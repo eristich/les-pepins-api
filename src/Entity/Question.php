@@ -19,18 +19,25 @@ class Question
     #[ORM\Column(name: 'Question_Lib', length: 255, nullable: true)]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(inversedBy: 'questions')]
-    #[ORM\JoinColumn(name: 'ID_Theme', nullable: false, referencedColumnName: 'ID_Theme')]
+    #[ORM\ManyToOne(targetEntity: Theme::class, inversedBy: 'questions')]
+    #[ORM\JoinColumn(name: 'ID_Theme', referencedColumnName: 'ID_Theme', nullable: false)]
     private ?Theme $theme = null;
+
+    /**
+     * @var Collection<int, Response>
+     */
+    #[ORM\OneToMany(targetEntity: Response::class, mappedBy: 'question', cascade: ['persist', 'remove'])]
+    private Collection $responses;
 
     /**
      * @var Collection<int, UserResponse>
      */
-    #[ORM\OneToMany(targetEntity: UserResponse::class, mappedBy: 'ID_Reponse')]
+    #[ORM\OneToMany(targetEntity: UserResponse::class, mappedBy: 'question', cascade: ['persist', 'remove'])]
     private Collection $userResponses;
 
     public function __construct()
     {
+        $this->responses = new ArrayCollection();
         $this->userResponses = new ArrayCollection();
     }
 

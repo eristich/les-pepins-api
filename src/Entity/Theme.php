@@ -22,7 +22,7 @@ class Theme
     /**
      * @var Collection<int, Question>
      */
-    #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'theme')]
+    #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'theme', cascade: ['persist', 'remove'])]
     private Collection $questions;
 
     public function __construct()
