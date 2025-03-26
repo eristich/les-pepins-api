@@ -6,7 +6,7 @@ use App\Repository\UserResponseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserResponseRepository::class)]
-#[ORM\Table('USER_RESPONSES')]
+#[ORM\Table('USER_REPONSES')]
 class UserResponse
 {
     #[ORM\Id]
