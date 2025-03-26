@@ -24,14 +24,14 @@ class Question
     private ?Theme $theme = null;
 
     /**
-     * @var Collection<int, Response>
+     * @var Collection<int, UserResponse>
      */
-    #[ORM\OneToMany(targetEntity: Response::class, mappedBy: 'question')]
-    private Collection $responses;
+    #[ORM\OneToMany(targetEntity: UserResponse::class, mappedBy: 'ID_Reponse')]
+    private Collection $userResponses;
 
     public function __construct()
     {
-        $this->responses = new ArrayCollection();
+        $this->userResponses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -59,36 +59,6 @@ class Question
     public function setTheme(?Theme $theme): static
     {
         $this->theme = $theme;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Response>
-     */
-    public function getResponses(): Collection
-    {
-        return $this->responses;
-    }
-
-    public function addResponse(Response $response): static
-    {
-        if (!$this->responses->contains($response)) {
-            $this->responses->add($response);
-            $response->setQuestion($this);
-        }
-
-        return $this;
-    }
-
-    public function removeResponse(Response $response): static
-    {
-        if ($this->responses->removeElement($response)) {
-            // set the owning side to null (unless already changed)
-            if ($response->getQuestion() === $this) {
-                $response->setQuestion(null);
-            }
-        }
 
         return $this;
     }

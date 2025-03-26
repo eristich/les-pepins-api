@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ResponseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ResponseRepository::class)]
@@ -20,9 +22,20 @@ class Response
     #[ORM\Column(name: 'Poids', nullable: true)]
     private ?float $weight = null;
 
-    #[ORM\ManyToOne(inversedBy: 'responses')]
-    #[ORM\JoinColumn(name: 'ID_Question', nullable: false, referencedColumnName: 'ID_Question')]
+    #[ORM\ManyToOne(targetEntity: Question::class)]
+    #[ORM\JoinColumn(name: 'ID_Question', referencedColumnName: 'ID_Question', nullable: false)]
     private ?Question $question = null;
+
+    /**
+     * @var Collection<int, UserResponse>
+     */
+    #[ORM\OneToMany(targetEntity: UserResponse::class, mappedBy: 'ID_Question')]
+    private Collection $userResponses;
+
+    public function __construct()
+    {
+        $this->userResponses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
