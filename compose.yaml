@@ -4,8 +4,8 @@ services:
     image: mariadb:${MARIADB_VERSION:-11.7.2-noble}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-8B3H72Idd76Unue0hcd}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-app}
-      MYSQL_USER: ${MYSQL_USER:-app}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ydays}
+      MYSQL_USER: ${MYSQL_USER:-ydays}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-8B3H72Idd76Unue0hcd}
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -16,6 +16,17 @@ services:
       - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
     volumes:
       - database_data:/var/lib/mysql:rw
+
+  phpmyadmin:
+    depends_on:
+      - database
+    image: phpmyadmin:5.2.2-apache
+    restart: always
+    ports:
+      - "127.0.0.1:8090:80"
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: 8B3H72Idd76Unue0hcd
 
 volumes:
 ###> doctrine/doctrine-bundle ###
