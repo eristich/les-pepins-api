@@ -6,7 +6,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Theme;
 use App\Entity\Question;
-use App\Entity\Response;
+use App\Entity\Answer;
 
 class AppFixtures extends Fixture
 {
@@ -56,7 +56,7 @@ class AppFixtures extends Fixture
         }
         
         // Création des réponses avec les valeurs spécifiques du fichier SQL
-        $responsesData = [
+        $answersData = [
             // Alimentation
             ['0 repas', 0, 0], ['1-3 repas', 200, 0], ['4-7 repas', 500, 0], ['Plus de 7 repas', 800, 0],
             ['Plus de 75 %', 50, 1], ['Entre 50 % et 75 %', 100, 1], ['Entre 25 % et 50 %', 200, 1], ['Moins de 25 %', 400, 1],
@@ -77,12 +77,12 @@ class AppFixtures extends Fixture
             ['Moins de 25 %', 500, 14], ['25-50 %', 300, 14], ['50-75 %', 150, 14], ['Plus de 75 %', 50, 14],
         ];
         
-        foreach ($responsesData as [$responseText, $weight, $questionIndex]) {
-            $response = new Response();
-            $response->setName($responseText);
-            $response->setWeight($weight);
-            $response->setQuestion($questions[$questionIndex]);
-            $manager->persist($response);
+        foreach ($answersData as [$answerText, $weight, $questionIndex]) {
+            $answer = new Answer();
+            $answer->setName($answerText);
+            $answer->setWeight($weight);
+            $answer->setQuestion($questions[$questionIndex]);
+            $manager->persist($answer);
         }
         
         $manager->flush();
