@@ -9,8 +9,10 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ThemeRepository;
+use OpenApi\Attributes as OA;
 use App\Entity\UserAnswer;
 use App\Entity\Question;
 use App\Entity\Answer;
@@ -18,6 +20,11 @@ use App\Entity\Answer;
 #[Route('/api/v1/question')]
 final class QuestionController extends AbstractController
 {
+    #[OA\Response(
+        response: 200,
+        description: 'Get question collection with themes and answers',
+        content: new Model(type: Question::class, groups: ['question:get-collection'])
+    )]
     #[Route(
         path: 's', 
         name: 'api.v1.question.get-collection', 
@@ -36,6 +43,26 @@ final class QuestionController extends AbstractController
         );
     }
 
+
+
+    #[OA\Parameter(
+        name: 'questionId',
+        description: 'The ID of the question to retrieve',
+        in: 'path',
+        required: true,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Parameter(
+        name: 'answerId',
+        description: 'The id of the selected answer to the question',
+        in: 'path',
+        required: true,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Create a new user answer',
+    )]
     #[Route(
         path: '/{questionId}/answer/{answerId}',
         name: 'api.v1.user-answer.post',
@@ -61,10 +88,6 @@ final class QuestionController extends AbstractController
         $entityManager->persist($userAnswer);
         $entityManager->flush();
 
-        return new Response(
-            $serializer->serialize($question, 'json', ['groups' => ['question:get-collection']]),
-            Response::HTTP_OK,
-            ['Content-Type' => 'application/json']
-        );
+        return new Response(201);
     }
 }
