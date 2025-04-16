@@ -53,7 +53,7 @@ final class QuestionController extends AbstractController
     ): Response
     {
         $userAnswer = new UserAnswer();
-        $userAnswer->setUser($this->getUser());
+        $userAnswer->setUser($this->getUser()); // todo: replace with a real user solution
         $userAnswer->setQuestion($question);
         $userAnswer->setAnswer($answer);
 
