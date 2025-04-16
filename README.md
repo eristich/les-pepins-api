@@ -36,6 +36,8 @@ php bin/console doctrine:fixtures:load -n
 
 # Lancer le serveur Symfony en écoute
 symfony server:start
+
+# Une documentation des routes API est disponible à ce chemin : /api/v1/doc
 ```
 
 ## Exemples de commandes
