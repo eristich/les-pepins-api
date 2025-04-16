@@ -15,11 +15,11 @@ class Question
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Question')]
-    #[Groups(['question:get-one', 'question:get-all'])]
+    #[Groups(['question:get-one', 'question:get-all', 'question:get-collection'])]
     private ?int $id = null;
 
     #[ORM\Column(name: 'Question_Lib', length: 255, nullable: true)]
-    #[Groups(['question:get-one', 'question:get-all'])]
+    #[Groups(['question:get-one', 'question:get-all', 'question:get-collection'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne(targetEntity: Theme::class, inversedBy: 'questions')]
@@ -31,8 +31,9 @@ class Question
      * @var Collection<int, Answer>
      */
     #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'question', cascade: ['persist', 'remove'])]
+    #[Groups(['question:get-collection'])]
     private Collection $answers;
-
+    
     /**
      * @var Collection<int, UserAnswer>
      */

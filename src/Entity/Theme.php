@@ -6,6 +6,7 @@ use App\Repository\ThemeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ThemeRepository::class)]
 #[ORM\Table('THEME')]
@@ -14,15 +15,18 @@ class Theme
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Theme')]
+    #[Groups(['question:get-collection'])]
     private ?int $id = null;
 
     #[ORM\Column(name: 'Theme_Lib', length: 255, nullable: true)]
+    #[Groups(['question:get-collection'])]
     private ?string $name = null;
 
     /**
      * @var Collection<int, Question>
      */
     #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'theme', cascade: ['persist', 'remove'])]
+    #[Groups(['question:get-collection'])]
     private Collection $questions;
 
     public function __construct()

@@ -6,6 +6,8 @@ use App\Repository\AnswerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: AnswerRepository::class)]
 #[ORM\Table('REPONSE')]
@@ -14,13 +16,16 @@ class Answer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'ID_Reponse')]
+    #[Groups(['question:get-collection'])]
     private ?int $id = null;
 
     #[ORM\Column(name: 'Reponse_Lib', length: 255, nullable: true)]
+    #[Groups(['question:get-collection'])]
     private ?string $name = null;
 
     // todo: replace column type "double" by "float"
-    #[ORM\Column(name: 'Poids', nullable: true)]
+    #[ORM\Column(name: 'Poids', type: Types::FLOAT, nullable: true)]
+    #[Groups(['question:get-collection'])]
     private ?float $weight = null;
 
     #[ORM\ManyToOne(targetEntity: Question::class, inversedBy: 'answers')]
