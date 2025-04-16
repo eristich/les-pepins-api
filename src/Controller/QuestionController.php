@@ -16,6 +16,7 @@ use OpenApi\Attributes as OA;
 use App\Entity\UserAnswer;
 use App\Entity\Question;
 use App\Entity\Answer;
+use App\Entity\Theme;
 
 #[Route('/api/v1/question')]
 final class QuestionController extends AbstractController
@@ -23,7 +24,7 @@ final class QuestionController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'Get question collection with themes and answers',
-        content: new Model(type: Question::class, groups: ['question:get-collection'])
+        content: new Model(type: Theme::class, groups: ['question:get-collection'])
     )]
     #[Route(
         path: 's', 
