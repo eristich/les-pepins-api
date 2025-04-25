@@ -3,9 +3,8 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +13,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ThemeRepository;
 use OpenApi\Attributes as OA;
 use App\Entity\UserAnswer;
+use App\Dto\UserAnswerDto;
 use App\Entity\Question;
 use App\Entity\Answer;
+use App\Entity\User;
 use App\Entity\Theme;
 
 #[Route('/api/v1/question')]
@@ -46,47 +47,65 @@ final class QuestionController extends AbstractController
 
 
 
-    #[OA\Parameter(
-        name: 'questionId',
-        description: 'The ID of the question to retrieve',
-        in: 'path',
-        required: true,
-        schema: new OA\Schema(type: 'integer')
-    )]
-    #[OA\Parameter(
-        name: 'answerId',
-        description: 'The id of the selected answer to the question',
-        in: 'path',
-        required: true,
-        schema: new OA\Schema(type: 'integer')
+    #[OA\RequestBody(
+        description: 'User answer to the question',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: UserAnswerDto::class))
+        )
     )]
     #[OA\Response(
         response: 201,
         description: 'Create a new user answer',
     )]
     #[Route(
-        path: '/{questionId}/answer/{answerId}',
-        name: 'api.v1.user-answer.post',
+        path: '/user-answers',
+        name: 'api.v1.user-answers.post',
         methods: ['POST'],
-        requirements: [
-            'questionId'    => Requirement::DIGITS,
-            'answerId'      => Requirement::DIGITS
-        ]
     )]
     public function postAnswer(
-        #[MapEntity(Question::class, 'questionId')] Question    $question,
-        #[MapEntity(Answer::class, 'answerId')] Answer          $answer,
-        SerializerInterface                                     $serializer,
-        EntityManagerInterface                                  $entityManager,
+        EntityManagerInterface                          $entityManager,
+        Request                                         $request,
+        SerializerInterface                             $serializer,
     ): Response
     {
-        $userAnswer = new UserAnswer();
-        $userAnswer->setUser($this->getUser()); // todo: replace with a real user solution
-        $userAnswer->setQuestion($question);
-        $userAnswer->setAnswer($answer);
+        /** @var UserAnswerDto[] $userAnswerListPayloadDto */
+        $userAnswerListPayloadDto = $serializer->deserialize($request->getContent(), UserAnswerDto::class . '[]', 'json');
 
-        $question->addUserAnswer($userAnswer);
-        $entityManager->persist($userAnswer);
+        $user = new User();
+        $entityManager->persist($user);
+
+        foreach ($userAnswerListPayloadDto as $dto) {
+            // ⚡ Utilise des références légères (pas de requête ici)
+            $question = $entityManager->getReference(Question::class, $dto->questionId);
+            $answer = $entityManager->getReference(Answer::class, $dto->answerId);
+
+            // 🧪 Vérifie que les entités existent vraiment
+            if (!$entityManager->getUnitOfWork()->isInIdentityMap($question)) {
+                $question = $entityManager->find(Question::class, $dto->questionId);
+            }
+            if (!$entityManager->getUnitOfWork()->isInIdentityMap($answer)) {
+                $answer = $entityManager->find(Answer::class, $dto->answerId);
+            }
+
+            if (!$question || !$answer) {
+                return new JsonResponse([
+                    'error' => 'Question or Answer not found',
+                    'questionId' => $dto->questionId,
+                    'answerId' => $dto->answerId,
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            // todo: verifier si la reponse fournit par l'utilisateur fait partie des reponses possible a la question
+
+            $userAnswer = new UserAnswer();
+            $userAnswer->setUser($user);
+            $userAnswer->setQuestion($question);
+            $userAnswer->setAnswer($answer);
+
+            $entityManager->persist($userAnswer);
+        }
+
         $entityManager->flush();
 
         return new Response(201);
